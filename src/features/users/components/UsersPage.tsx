@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { Input } from '@/components/ui/input'
@@ -69,8 +69,12 @@ export function UsersPage() {
 
   const [searchInput, setSearchInput] = useState(queryParam)
   const debouncedQuery = useDebounce(searchInput, 300)
+  const prevQueryRef = useRef(debouncedQuery)
 
   useEffect(() => {
+    if (prevQueryRef.current === debouncedQuery) return
+    prevQueryRef.current = debouncedQuery
+
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev)
       if (debouncedQuery) {
