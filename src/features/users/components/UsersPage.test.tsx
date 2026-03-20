@@ -20,7 +20,7 @@ describe('UsersPage - Pagination', () => {
 
     await waitFor(
       () => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument()
       },
       { timeout: 5000 }
     )
@@ -33,7 +33,7 @@ describe('UsersPage - Pagination', () => {
 
     await waitFor(
       () => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument()
       },
       { timeout: 5000 }
     )
@@ -47,7 +47,7 @@ describe('UsersPage - Pagination', () => {
 
     await waitFor(
       () => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument()
       },
       { timeout: 5000 }
     )
@@ -62,7 +62,7 @@ describe('UsersPage - Pagination', () => {
 
     await waitFor(
       () => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument()
       },
       { timeout: 5000 }
     )
@@ -86,7 +86,7 @@ describe('UsersPage - Search', () => {
 
     await waitFor(
       () => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument()
       },
       { timeout: 5000 }
     )
@@ -111,7 +111,7 @@ describe('UsersPage - Search', () => {
 
     await waitFor(
       () => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('skeleton-row')).not.toBeInTheDocument()
       },
       { timeout: 5000 }
     )
@@ -126,5 +126,29 @@ describe('UsersPage - Search', () => {
       'Search by name...'
     ) as HTMLInputElement
     expect(searchInput.value).toBe('Emily')
+  })
+
+  it('shows clear button when search has a value', () => {
+    renderWithRouter(['/?q=Emily'])
+
+    expect(screen.getByRole('button', { name: /clear search/i })).toBeInTheDocument()
+  })
+
+  it('hides clear button when search is empty', () => {
+    renderWithRouter()
+
+    expect(screen.queryByRole('button', { name: /clear search/i })).not.toBeInTheDocument()
+  })
+
+  it('clears search input when clear button is clicked', async () => {
+    renderWithRouter(['/?q=Emily'])
+
+    const searchInput = screen.getByPlaceholderText('Search by name...') as HTMLInputElement
+    expect(searchInput.value).toBe('Emily')
+
+    await userEvent.click(screen.getByRole('button', { name: /clear search/i }))
+
+    expect(searchInput.value).toBe('')
+    expect(screen.queryByRole('button', { name: /clear search/i })).not.toBeInTheDocument()
   })
 })

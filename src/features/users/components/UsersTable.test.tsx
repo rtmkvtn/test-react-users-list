@@ -29,9 +29,11 @@ const mockUsers: IUser[] = [
 ]
 
 describe('UsersTable', () => {
-  it('shows loading state', () => {
+  it('shows loading state with skeleton rows', () => {
     render(<UsersTable loading={true} />)
-    expect(screen.getByText('Loading...')).toBeInTheDocument()
+    const skeletonRows = screen.getAllByTestId('skeleton-row')
+    expect(skeletonRows).toHaveLength(10)
+    expect(screen.getByText('Name')).toBeInTheDocument()
   })
 
   it('renders users in a table with correct columns', () => {

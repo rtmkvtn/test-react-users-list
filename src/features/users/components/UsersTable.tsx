@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -9,6 +10,8 @@ import {
 } from '@/components/ui/table'
 
 import type { IUser } from '../types'
+
+const SKELETON_ROW_COUNT = 10
 
 interface UsersTableProps {
   users?: IUser[]
@@ -23,10 +26,6 @@ export function UsersTable({
   error = null,
   onRetry,
 }: UsersTableProps) {
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
   if (error) {
     return (
       <div className="flex flex-col items-center gap-4 py-8">
@@ -40,7 +39,7 @@ export function UsersTable({
     )
   }
 
-  if (users.length === 0) {
+  if (!loading && users.length === 0) {
     return (
       <div className="py-8 text-center text-muted-foreground">
         No users found
@@ -61,24 +60,47 @@ export function UsersTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {users.map((user) => (
-          <TableRow key={user.id}>
-            <TableCell>
-              <img
-                src={user.image}
-                alt={`${user.firstName} ${user.lastName}`}
-                className="h-8 w-8 rounded-full"
-              />
-            </TableCell>
-            <TableCell className="font-medium">
-              {user.firstName} {user.lastName}
-            </TableCell>
-            <TableCell>{user.email}</TableCell>
-            <TableCell>{user.phone}</TableCell>
-            <TableCell>{user.age}</TableCell>
-            <TableCell>{user.address.city}</TableCell>
-          </TableRow>
-        ))}
+        {loading
+          ? Array.from({ length: SKELETON_ROW_COUNT }, (_, i) => (
+              <TableRow key={i} data-testid="skeleton-row">
+                <TableCell>
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-[120px]" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-[180px]" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-[120px]" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-[30px]" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-[100px]" />
+                </TableCell>
+              </TableRow>
+            ))
+          : users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell>
+                  <img
+                    src={user.image}
+                    alt={`${user.firstName} ${user.lastName}`}
+                    className="h-8 w-8 rounded-full"
+                  />
+                </TableCell>
+                <TableCell className="font-medium">
+                  {user.firstName} {user.lastName}
+                </TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.phone}</TableCell>
+                <TableCell>{user.age}</TableCell>
+                <TableCell>{user.address.city}</TableCell>
+              </TableRow>
+            ))}
       </TableBody>
     </Table>
   )

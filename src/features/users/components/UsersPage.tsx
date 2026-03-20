@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
+import { XIcon } from 'lucide-react'
+
 import { Input } from '@/components/ui/input'
 import {
   Pagination,
@@ -116,14 +118,24 @@ export function UsersPage() {
   return (
     <div className="container mx-auto py-8">
       <h1 className="mb-6 text-2xl font-bold">Users Catalog</h1>
-      <div className="mb-4">
+      <div className="relative mb-4 max-w-sm">
         <Input
           type="text"
           placeholder="Search by name..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          className="max-w-sm"
+          className="pr-8"
         />
+        {searchInput && (
+          <button
+            type="button"
+            aria-label="Clear search"
+            onClick={() => setSearchInput('')}
+            className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
+          >
+            <XIcon className="size-4" />
+          </button>
+        )}
       </div>
       <UsersTable
         users={data?.users}
