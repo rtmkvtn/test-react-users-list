@@ -113,8 +113,6 @@ export function UsersPage() {
     })
   }
 
-  const pageNumbers = getPageNumbers(page, totalPages)
-
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="mb-6 text-2xl font-bold">Users Catalog</h1>
@@ -176,7 +174,7 @@ export function UsersPage() {
                   }
                 />
               </PaginationItem>
-              {pageNumbers.map((p) =>
+              {getPageNumbers(page, totalPages).map((p) =>
                 p < 0 ? (
                   <PaginationItem key={p}>
                     <PaginationEllipsis />
