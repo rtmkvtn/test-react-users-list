@@ -37,7 +37,8 @@ export function useUsers({
       const response = await fetch(url)
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch users: ${response.statusText}`)
+        setError(`Failed to fetch users: ${response.statusText}`)
+        return
       }
 
       const json: IUsersResponse = await response.json()
@@ -50,7 +51,7 @@ export function useUsers({
   }, [limit, skip, query])
 
   useEffect(() => {
-    fetchUsers()
+    void fetchUsers()
   }, [fetchUsers])
 
   return { data, loading, error, refetch: fetchUsers }
