@@ -34,5 +34,5 @@ e2e/.auth/
 # Beads
 .beads/
 
-# Claude skills
-.claude/skills/
+# Claude
+.claude/
