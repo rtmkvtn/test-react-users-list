@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react'
+import { useCallback, useEffect, useReducer } from 'react'
 
 import type { IUsersResponse } from '../types'
 
@@ -24,18 +24,25 @@ type State =
   | { status: 'error'; error: string; data: IUsersResponse | null }
 
 type Action =
-  | { type: 'FETCH'; data: IUsersResponse | null }
+  | { type: 'FETCH' }
   | { type: 'SUCCESS'; data: IUsersResponse }
-  | { type: 'ERROR'; error: string; data: IUsersResponse | null }
+  | { type: 'ERROR'; error: string }
 
-function reducer(_state: State, action: Action): State {
+function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'FETCH':
-      return { status: 'loading', data: action.data }
+      return {
+        status: 'loading',
+        data: state.status !== 'idle' ? state.data : null,
+      }
     case 'SUCCESS':
       return { status: 'success', data: action.data }
     case 'ERROR':
-      return { status: 'error', error: action.error, data: action.data }
+      return {
+        status: 'error',
+        error: action.error,
+        data: state.status !== 'idle' ? state.data : null,
+      }
   }
 }
 
@@ -45,52 +52,45 @@ export function useUsers({
   query = '',
 }: UseUsersParams = {}): UseUsersResult {
   const [state, dispatch] = useReducer(reducer, { status: 'idle' })
-  const paramsRef = useRef({ limit, skip, query })
-  paramsRef.current = { limit, skip, query }
 
-  const previousDataRef = useRef<IUsersResponse | null>(null)
-  if (state.status === 'success') {
-    previousDataRef.current = state.data
-  }
+  const fetchUsers = useCallback(
+    async (signal?: AbortSignal) => {
+      dispatch({ type: 'FETCH' })
 
-  const fetchUsers = useCallback(async (signal?: AbortSignal) => {
-    const { limit: l, skip: s, query: q } = paramsRef.current
-    dispatch({ type: 'FETCH', data: previousDataRef.current })
+      try {
+        const url = query
+          ? `${API_BASE}/users/search?q=${encodeURIComponent(query)}&limit=${limit}&skip=${skip}`
+          : `${API_BASE}/users?limit=${limit}&skip=${skip}`
+        const response = await fetch(url, { signal })
 
-    try {
-      const url = q
-        ? `${API_BASE}/users/search?q=${encodeURIComponent(q)}&limit=${l}&skip=${s}`
-        : `${API_BASE}/users?limit=${l}&skip=${s}`
-      const response = await fetch(url, { signal })
+        if (!response.ok) {
+          dispatch({
+            type: 'ERROR',
+            error: `Failed to fetch users: ${response.statusText}`,
+          })
+          return
+        }
 
-      if (!response.ok) {
+        const json: IUsersResponse = await response.json()
+        dispatch({ type: 'SUCCESS', data: json })
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return
+        }
         dispatch({
           type: 'ERROR',
-          error: `Failed to fetch users: ${response.statusText}`,
-          data: previousDataRef.current,
+          error: err instanceof Error ? err.message : 'An error occurred',
         })
-        return
       }
-
-      const json: IUsersResponse = await response.json()
-      dispatch({ type: 'SUCCESS', data: json })
-    } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return
-      }
-      dispatch({
-        type: 'ERROR',
-        error: err instanceof Error ? err.message : 'An error occurred',
-        data: previousDataRef.current,
-      })
-    }
-  }, [])
+    },
+    [limit, skip, query]
+  )
 
   useEffect(() => {
     const controller = new AbortController()
     void fetchUsers(controller.signal)
     return () => controller.abort()
-  }, [limit, skip, query, fetchUsers])
+  }, [fetchUsers])
 
   const data =
     state.status === 'success'
