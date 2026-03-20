@@ -7,6 +7,7 @@ const API_BASE = 'https://dummyjson.com'
 interface UseUsersParams {
   limit?: number
   skip?: number
+  query?: string
 }
 
 interface UseUsersResult {
@@ -19,6 +20,7 @@ interface UseUsersResult {
 export function useUsers({
   limit = 10,
   skip = 0,
+  query = '',
 }: UseUsersParams = {}): UseUsersResult {
   const [data, setData] = useState<IUsersResponse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -29,7 +31,9 @@ export function useUsers({
     setError(null)
 
     try {
-      const url = `${API_BASE}/users?limit=${limit}&skip=${skip}`
+      const url = query
+        ? `${API_BASE}/users/search?q=${encodeURIComponent(query)}&limit=${limit}&skip=${skip}`
+        : `${API_BASE}/users?limit=${limit}&skip=${skip}`
       const response = await fetch(url)
 
       if (!response.ok) {
@@ -43,7 +47,7 @@ export function useUsers({
     } finally {
       setLoading(false)
     }
-  }, [limit, skip])
+  }, [limit, skip, query])
 
   useEffect(() => {
     fetchUsers()

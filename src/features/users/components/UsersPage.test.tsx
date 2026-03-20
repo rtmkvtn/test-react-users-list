@@ -72,3 +72,59 @@ describe('UsersPage - Pagination', () => {
     expect(rows).toHaveLength(6)
   })
 })
+
+describe('UsersPage - Search', () => {
+  it('renders a search input', async () => {
+    renderWithRouter()
+
+    const searchInput = screen.getByPlaceholderText('Search by name...')
+    expect(searchInput).toBeInTheDocument()
+  })
+
+  it('searches users by name via API', async () => {
+    renderWithRouter(['/?q=Emily'])
+
+    await waitFor(
+      () => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+      },
+      { timeout: 5000 }
+    )
+
+    // Should find Emily in results
+    const rows = screen.getAllByRole('row')
+    expect(rows.length).toBeGreaterThan(1)
+
+    // All visible names should contain Emily
+    const cells = screen.getAllByRole('cell')
+    const nameTexts = cells
+      .filter((cell) => cell.classList.contains('font-medium'))
+      .map((cell) => cell.textContent)
+
+    nameTexts.forEach((name) => {
+      expect(name?.toLowerCase()).toContain('emily')
+    })
+  })
+
+  it('shows empty state for search with no results', async () => {
+    renderWithRouter(['/?q=xyznonexistent123'])
+
+    await waitFor(
+      () => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+      },
+      { timeout: 5000 }
+    )
+
+    expect(screen.getByText('No users found')).toBeInTheDocument()
+  })
+
+  it('initializes search input from URL q param', () => {
+    renderWithRouter(['/?q=Emily'])
+
+    const searchInput = screen.getByPlaceholderText(
+      'Search by name...'
+    ) as HTMLInputElement
+    expect(searchInput.value).toBe('Emily')
+  })
+})

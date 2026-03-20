@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
+import { Input } from '@/components/ui/input'
 import {
   Pagination,
   PaginationContent,
@@ -17,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+import { useDebounce } from '../hooks/useDebounce'
 import { useUsers } from '../hooks/useUsers'
 import { UsersTable } from './UsersTable'
 
@@ -45,11 +48,11 @@ function getPageNumbers(currentPage: number, totalPages: number): number[] {
     start = Math.max(totalPages - 3, 2)
   }
 
-  if (start > 2) pages.push(-1) // ellipsis
+  if (start > 2) pages.push(-1)
   for (let i = start; i <= end; i++) {
     pages.push(i)
   }
-  if (end < totalPages - 1) pages.push(-2) // ellipsis
+  if (end < totalPages - 1) pages.push(-2)
 
   pages.push(totalPages)
 
@@ -61,9 +64,30 @@ export function UsersPage() {
 
   const page = Number(searchParams.get('page') || '1')
   const limit = Number(searchParams.get('limit') || '10')
+  const queryParam = searchParams.get('q') || ''
   const skip = (page - 1) * limit
 
-  const { data, loading, error, refetch } = useUsers({ limit, skip })
+  const [searchInput, setSearchInput] = useState(queryParam)
+  const debouncedQuery = useDebounce(searchInput, 300)
+
+  useEffect(() => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (debouncedQuery) {
+        next.set('q', debouncedQuery)
+      } else {
+        next.delete('q')
+      }
+      next.set('page', '1')
+      return next
+    })
+  }, [debouncedQuery, setSearchParams])
+
+  const { data, loading, error, refetch } = useUsers({
+    limit,
+    skip,
+    query: queryParam,
+  })
   const totalPages = data ? Math.ceil(data.total / limit) : 0
 
   const setPage = (newPage: number) => {
@@ -88,6 +112,15 @@ export function UsersPage() {
   return (
     <div className="container mx-auto py-8">
       <h1 className="mb-6 text-2xl font-bold">Users Catalog</h1>
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Search by name..."
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
       <UsersTable
         users={data?.users}
         loading={loading}
