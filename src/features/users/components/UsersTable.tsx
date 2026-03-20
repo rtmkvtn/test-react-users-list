@@ -13,6 +13,29 @@ import type { IUser } from '../types'
 
 const SKELETON_ROW_COUNT = 10
 
+const skeletonRows = Array.from({ length: SKELETON_ROW_COUNT }, (_, i) => (
+  <TableRow key={i} data-testid="skeleton-row">
+    <TableCell>
+      <Skeleton className="h-8 w-8 rounded-full" />
+    </TableCell>
+    <TableCell>
+      <Skeleton className="h-4 w-30" />
+    </TableCell>
+    <TableCell>
+      <Skeleton className="h-4 w-45" />
+    </TableCell>
+    <TableCell>
+      <Skeleton className="h-4 w-30" />
+    </TableCell>
+    <TableCell>
+      <Skeleton className="h-4 w-7.5" />
+    </TableCell>
+    <TableCell>
+      <Skeleton className="h-4 w-25" />
+    </TableCell>
+  </TableRow>
+))
+
 interface UsersTableProps {
   users?: IUser[]
   loading?: boolean
@@ -61,28 +84,7 @@ export function UsersTable({
       </TableHeader>
       <TableBody>
         {loading
-          ? Array.from({ length: SKELETON_ROW_COUNT }, (_, i) => (
-              <TableRow key={i} data-testid="skeleton-row">
-                <TableCell>
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-30" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-45" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-30" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-7.5" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-4 w-25" />
-                </TableCell>
-              </TableRow>
-            ))
+          ? skeletonRows
           : users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>
