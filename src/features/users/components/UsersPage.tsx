@@ -116,7 +116,7 @@ export function UsersPage() {
   const pageNumbers = getPageNumbers(page, totalPages)
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 px-4">
       <h1 className="mb-6 text-2xl font-bold">Users Catalog</h1>
       <div className="relative mb-4 max-w-sm">
         <Input
@@ -144,9 +144,9 @@ export function UsersPage() {
         onRetry={refetch}
       />
       {!loading && !error && data && data.users.length > 0 && (
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-4 flex flex-wrap-reverse md:flex-nowrap items-center justify-center md:justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Rows per page</span>
+            <span className="text-sm text-muted-foreground whitespace-nowrap">Rows per page</span>
             <Select
               value={limit}
               onValueChange={(val) => setLimit(val as number)}
@@ -163,7 +163,7 @@ export function UsersPage() {
               </SelectContent>
             </Select>
           </div>
-          <Pagination>
+          <Pagination className="md:justify-end">
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
