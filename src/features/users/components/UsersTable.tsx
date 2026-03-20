@@ -51,11 +51,11 @@ export function UsersTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[60px]">Avatar</TableHead>
+          <TableHead className="w-15">Avatar</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Phone</TableHead>
-          <TableHead className="w-[60px]">Age</TableHead>
+          <TableHead className="w-15">Age</TableHead>
           <TableHead>City</TableHead>
         </TableRow>
       </TableHeader>
@@ -67,19 +67,19 @@ export function UsersTable({
                   <Skeleton className="h-8 w-8 rounded-full" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-[120px]" />
+                  <Skeleton className="h-4 w-30" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-[180px]" />
+                  <Skeleton className="h-4 w-45" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-[120px]" />
+                  <Skeleton className="h-4 w-30" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-[30px]" />
+                  <Skeleton className="h-4 w-7.5" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-[100px]" />
+                  <Skeleton className="h-4 w-25" />
                 </TableCell>
               </TableRow>
             ))
