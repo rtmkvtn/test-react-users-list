@@ -131,25 +131,33 @@ describe('UsersPage - Search', () => {
   it('shows clear button when search has a value', () => {
     renderWithRouter(['/?q=Emily'])
 
-    expect(screen.getByRole('button', { name: /clear search/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /clear search/i })
+    ).toBeInTheDocument()
   })
 
   it('hides clear button when search is empty', () => {
     renderWithRouter()
 
-    expect(screen.queryByRole('button', { name: /clear search/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /clear search/i })
+    ).not.toBeInTheDocument()
   })
 
   it('clears search input when clear button is clicked', async () => {
     renderWithRouter(['/?q=Emily'])
 
-    const searchInput = screen.getByPlaceholderText('Search by name...') as HTMLInputElement
+    const searchInput = screen.getByPlaceholderText(
+      'Search by name...'
+    ) as HTMLInputElement
     expect(searchInput.value).toBe('Emily')
 
     await userEvent.click(screen.getByRole('button', { name: /clear search/i }))
 
     expect(searchInput.value).toBe('')
-    expect(screen.queryByRole('button', { name: /clear search/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /clear search/i })
+    ).not.toBeInTheDocument()
   })
 })
 
@@ -268,10 +276,9 @@ describe('UsersPage - Rapid Interactions', () => {
     await user.type(searchInput, 'Emily')
 
     // Wait for debounce to fire and a new fetch to start
-    await waitFor(
-      () => expect(resolvers.length).toBeGreaterThan(1),
-      { timeout: 2000 }
-    )
+    await waitFor(() => expect(resolvers.length).toBeGreaterThan(1), {
+      timeout: 2000,
+    })
 
     // Resolve the latest search request with Emily-specific results
     const lastResolver = resolvers[resolvers.length - 1]

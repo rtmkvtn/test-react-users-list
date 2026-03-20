@@ -34,14 +34,36 @@ describe('useUsers', () => {
 
 describe('useUsers abort behavior', () => {
   const mockUsers = {
-    users: [{ id: 1, firstName: 'A', lastName: 'B', email: '', phone: '', age: 1, image: '', address: { city: '' } }],
+    users: [
+      {
+        id: 1,
+        firstName: 'A',
+        lastName: 'B',
+        email: '',
+        phone: '',
+        age: 1,
+        image: '',
+        address: { city: '' },
+      },
+    ],
     total: 1,
     skip: 0,
     limit: 10,
   }
 
   const mockUsersPage2 = {
-    users: [{ id: 2, firstName: 'C', lastName: 'D', email: '', phone: '', age: 2, image: '', address: { city: '' } }],
+    users: [
+      {
+        id: 2,
+        firstName: 'C',
+        lastName: 'D',
+        email: '',
+        phone: '',
+        age: 2,
+        image: '',
+        address: { city: '' },
+      },
+    ],
     total: 2,
     skip: 10,
     limit: 10,
@@ -107,24 +129,28 @@ describe('useUsers abort behavior', () => {
   })
 
   it('does not set error state when request is aborted', async () => {
-    fetchSpy.mockImplementationOnce(
-      (_url, init) =>
-        new Promise((_resolve, reject) => {
-          const signal = (init as RequestInit)?.signal
-          if (signal) {
-            signal.addEventListener('abort', () => {
-              reject(new DOMException('The operation was aborted.', 'AbortError'))
-            })
-          }
-        })
-    ).mockImplementationOnce(() =>
-      Promise.resolve(
-        new Response(JSON.stringify(mockUsers), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        })
+    fetchSpy
+      .mockImplementationOnce(
+        (_url, init) =>
+          new Promise((_resolve, reject) => {
+            const signal = (init as RequestInit)?.signal
+            if (signal) {
+              signal.addEventListener('abort', () => {
+                reject(
+                  new DOMException('The operation was aborted.', 'AbortError')
+                )
+              })
+            }
+          })
       )
-    )
+      .mockImplementationOnce(() =>
+        Promise.resolve(
+          new Response(JSON.stringify(mockUsers), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      )
 
     const { result, rerender } = renderHook(
       ({ skip }) => useUsers({ limit: 10, skip }),

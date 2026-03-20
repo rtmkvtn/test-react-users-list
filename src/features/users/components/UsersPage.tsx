@@ -144,7 +144,9 @@ export function UsersPage() {
       {!loading && !error && data && data.users.length > 0 && (
         <div className="mt-4 flex flex-wrap-reverse md:flex-nowrap items-center justify-center md:justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground whitespace-nowrap">Rows per page</span>
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              Rows per page
+            </span>
             <Select
               value={limit}
               onValueChange={(val) => setLimit(val as number)}

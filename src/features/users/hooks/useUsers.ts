@@ -92,11 +92,12 @@ export function useUsers({
     return () => controller.abort()
   }, [limit, skip, query, fetchUsers])
 
-  const data = state.status === 'success'
-    ? state.data
-    : state.status === 'error' || state.status === 'loading'
+  const data =
+    state.status === 'success'
       ? state.data
-      : null
+      : state.status === 'error' || state.status === 'loading'
+        ? state.data
+        : null
 
   const loading = state.status === 'idle' || state.status === 'loading'
   const error = state.status === 'error' ? state.error : null
